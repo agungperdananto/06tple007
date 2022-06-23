@@ -49,9 +49,32 @@ class Persediaan():
 class Produksi():
     minimum = 1000
     maximum = 5000
+    permintaan = 0
+    persediaan = 0
 
-    def berkurang(self):
-        pass
+    def berkurang(self, a):
+        return self.maximum - a * (self.maximum - self.minimum)
 
-    def bertambah(self):
-        pass
+    def bertambah(self, a):
+        return self.minimum + a * (self.maximum - self.minimum)
+
+    def _inferensi(self):
+        pmt = Permintaan()
+        psd = Persediaan()
+        data_inferensi = []
+        # [R1] JIKA Permintaan TURUN, dan Persediaan BANYAK, MAKA
+        # Produksi Barang BERKURANG.
+        a1 = min(pmt.turun(self.permintaan), psd.banyak(self.persediaan))
+        z1 = self.berkurang(a1)
+        # [R2] JIKA Permintaan TURUN, dan Persediaan SEDIKIT, MAKA
+        # Produksi Barang BERKURANG.
+        a2 = min(pmt.turun(self.permintaan), psd.sedikit(self.persediaan))
+        z2 = self.berkurang(a2)
+        # [R3] JIKA Permintaan NAIK, dan Persediaan BANYAK, MAKA
+        # Produksi Barang BERTAMBAH.
+        a3 = min(pmt.naik(self.permintaan), psd.banyak(self.persediaan))
+        z3 = self.bertambah(a3)
+        # [R4] JIKA Permintaan NAIK, dan Persediaan SEDIKIT, MAKA
+        # Produksi Barang BERTAMBAH.
+        a4 = min(pmt.naik(self.permintaan), psd.sedikit(self.persediaan))
+        z4 = self.bertambah(a4)
